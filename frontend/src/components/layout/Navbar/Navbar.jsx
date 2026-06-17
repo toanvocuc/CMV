@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const NAV_ITEMS = [
   { label: "Trang chủ", href: "/" },
@@ -39,13 +40,18 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mobileExpanded, setMobileExpanded] = useState(null);
-  const [activeItem, setActiveItem] = useState("/");
   const closeTimer = useRef(null);
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const onScroll = () => setIsSticky(window.scrollY > 75);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Clear timer on unmount to prevent setState on unmounted component
+  useEffect(() => {
+    return () => clearTimeout(closeTimer.current);
   }, []);
 
   useEffect(() => {
@@ -80,11 +86,10 @@ const Navbar = () => {
                   onMouseEnter={() => item.children && handleMouseEnter(item.href)}
                   onMouseLeave={() => item.children && handleMouseLeave()}
                 >
-                  <a
-                    href={item.href}
-                    onClick={() => setActiveItem(item.href)}
+                  <Link
+                    to={item.href}
                     className={`group relative flex items-center h-full px-4 xl:px-5 text-[13px] font-medium tracking-wide whitespace-nowrap transition-colors duration-200 ${
-                      activeItem === item.href
+                      pathname === item.href || pathname.startsWith(item.href + "/")
                         ? "text-white"
                         : "text-slate-400 hover:text-white"
                     }`}
@@ -95,12 +100,12 @@ const Navbar = () => {
                     {/* Underline indicator */}
                     <span
                       className={`absolute bottom-0 left-0 h-[2px] bg-[#c00000] transition-all duration-300 ease-out ${
-                        activeItem === item.href
+                        pathname === item.href || pathname.startsWith(item.href + "/")
                           ? "w-full"
                           : "w-0 group-hover:w-full"
                       }`}
                     />
-                  </a>
+                  </Link>
 
                   {/* Dropdown */}
                   {item.children && (
@@ -118,14 +123,13 @@ const Navbar = () => {
                       <ul className="py-1">
                         {item.children.map((child) => (
                           <li key={child.href}>
-                            <a
-                              href={child.href}
-                              onClick={() => setActiveItem(item.href)}
+                            <Link
+                              to={child.href}
                               className="group flex items-center gap-3 px-5 py-2.5 text-[13px] text-gray-600 hover:text-[#c00000] hover:bg-red-50 transition-all duration-150"
                             >
                               <span className="w-1 h-1 rounded-full bg-gray-300 group-hover:bg-[#c00000] transition-colors duration-150 shrink-0" />
                               {child.label}
-                            </a>
+                            </Link>
                           </li>
                         ))}
                       </ul>
@@ -200,34 +204,31 @@ const Navbar = () => {
                       <ul className="bg-[#080f1d] py-1">
                         {item.children.map((child) => (
                           <li key={child.href}>
-                            <a
-                              href={child.href}
+                            <Link
+                              to={child.href}
                               onClick={() => setMobileOpen(false)}
                               className="flex items-center gap-3 pl-10 pr-6 py-2.5 text-[12px] text-slate-400 hover:text-[#c00000] hover:bg-white/5 transition-colors duration-150"
                             >
                               <span className="w-1 h-1 rounded-full bg-[#c00000] shrink-0" />
                               {child.label}
-                            </a>
+                            </Link>
                           </li>
                         ))}
                       </ul>
                     </div>
                   </>
                 ) : (
-                  <a
-                    href={item.href}
-                    onClick={() => {
-                      setActiveItem(item.href);
-                      setMobileOpen(false);
-                    }}
+                  <Link
+                    to={item.href}
+                    onClick={() => setMobileOpen(false)}
                     className={`flex items-center px-6 py-3 text-[13px] font-medium transition-colors duration-150 ${
-                      activeItem === item.href
+                      pathname === item.href
                         ? "text-white border-l-2 border-[#c00000] bg-white/5"
                         : "text-slate-300 hover:text-white hover:bg-white/5"
                     }`}
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 )}
               </li>
             ))}

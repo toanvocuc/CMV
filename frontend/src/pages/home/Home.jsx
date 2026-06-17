@@ -1,6 +1,3 @@
-import Header from "../../components/layout/Header/Header";
-import Navbar from "../../components/layout/Navbar/Navbar";
-import Footer from "../../components/layout/Footer/Footer";
 import HeroBanner from "../../components/hero/HeroBanner/HeroBanner";
 import QuickLinks from "../../components/sections/QuickLinks/QuickLinks";
 import NewsSection from "../../components/sections/NewsSection/NewsSection";
@@ -13,19 +10,14 @@ import PartnersSection from "../../components/sections/PartnersSection/PartnersS
 function Home() {
   return (
     <>
-      <Header />
-      <Navbar />
-      <main>
-        <HeroBanner />
-        <QuickLinks />
-        <NewsSection />
-        <AboutSection />
-        <StatsSection />
-        <SubsidiarySection />
-        <MediaSection />
-        <PartnersSection />
-      </main>
-      <Footer />
+      <HeroBanner />
+      <QuickLinks />
+      <NewsSection />
+      <AboutSection />
+      <StatsSection />
+      <SubsidiarySection />
+      <MediaSection />
+      <PartnersSection />
     </>
   );
 }
