@@ -13,11 +13,20 @@ app.use(cors({
 
 app.use(express.json({ limit: "10mb" }));
 
-// Serve all uploaded files (images, videos, attachments) with inline Content-Disposition
 const uploadsDir = path.join(__dirname, "../uploads");
-app.use("/uploads", express.static(uploadsDir, {
-  setHeaders: (res) => res.setHeader("Content-Disposition", "inline"),
-}));
+
+// File attachments: dedicated route so Content-Disposition: inline is set BEFORE
+// send/serve-static can override it — this makes PDFs open in browser, not download
+app.get("/uploads/files/:filename", (req, res) => {
+  const filename = path.basename(req.params.filename); // prevent path traversal
+  res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
+  res.sendFile(filename, { root: path.join(uploadsDir, "files") }, (err) => {
+    if (err && !res.headersSent) res.status(404).end();
+  });
+});
+
+// Images and videos served normally
+app.use("/uploads", express.static(uploadsDir));
 
 app.use("/api", routes);
 
