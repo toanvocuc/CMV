@@ -27,6 +27,8 @@ model News {
   date        String
   status      String    @default("draft")
   sortOrder   Int       @default(0)
+  video       String?
+  attachments String?
   approvedBy  String?
   approvedAt  DateTime?
   authorId    Int?

@@ -5,6 +5,12 @@ node_modules/
 
 /src/generated/prisma
 
-# uploaded images (served at runtime, not committed)
+# uploaded files (served at runtime, not committed — keep directory structure)
 uploads/*
 !uploads/.gitkeep
+!uploads/videos/
+uploads/videos/*
+!uploads/videos/.gitkeep
+!uploads/files/
+uploads/files/*
+!uploads/files/.gitkeep

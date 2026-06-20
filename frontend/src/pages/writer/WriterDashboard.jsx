@@ -7,6 +7,8 @@ import {
 import { StatusBadge, CategoryBadge } from "../../components/admin/ui/Badge";
 import ConfirmDialog from "../../components/admin/ui/ConfirmDialog";
 import ImageUpload from "../../components/admin/ui/ImageUpload";
+import VideoUpload from "../../components/admin/ui/VideoUpload";
+import FileAttachments from "../../components/admin/ui/FileAttachments";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -20,7 +22,7 @@ const STATUS_TABS = [
   { key: "rejected", label: "Bị từ chối" },
 ];
 
-const EMPTY = { title: "", slug: "", excerpt: "", content: "", category: "Sản xuất", image: "" };
+const EMPTY = { title: "", slug: "", excerpt: "", content: "", category: "Sản xuất", image: "", video: "", attachments: [] };
 
 function toSlug(str) {
   return str.toLowerCase()
@@ -49,7 +51,15 @@ const STATUS_MESSAGE = {
 // ─── Article form drawer ──────────────────────────────────────────────────────
 
 const ArticleDrawer = ({ item, token, onSave, onClose }) => {
-  const [form, setForm] = useState(item ?? EMPTY);
+  const [form, setForm] = useState(() => {
+    if (!item) return EMPTY;
+    return {
+      ...item,
+      attachments: typeof item.attachments === "string"
+        ? JSON.parse(item.attachments || "[]")
+        : (item.attachments ?? []),
+    };
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const isEdit = !!item;
@@ -126,6 +136,22 @@ const ArticleDrawer = ({ item, token, onSave, onClose }) => {
             />
           </div>
 
+          {/* Video upload */}
+          <div>
+            <label className={labelCls}>Video <span className="normal-case font-normal text-gray-300">(tuỳ chọn)</span></label>
+            {canEdit ? (
+              <VideoUpload
+                value={form.video}
+                onChange={(url) => setForm((p) => ({ ...p, video: url }))}
+                token={token}
+              />
+            ) : form.video ? (
+              <video src={form.video} controls className="w-full max-h-52 rounded-xl bg-black object-contain" />
+            ) : (
+              <p className="text-[13px] text-gray-300 italic">Không có video</p>
+            )}
+          </div>
+
           <div>
             <label className={labelCls}>Tiêu đề *</label>
             <input
@@ -180,6 +206,31 @@ const ArticleDrawer = ({ item, token, onSave, onClose }) => {
               placeholder="Nội dung bài viết..."
               className={`${inputCls} resize-y`}
             />
+          </div>
+
+          {/* File attachments */}
+          <div>
+            <label className={labelCls}>File đính kèm <span className="normal-case font-normal text-gray-300">(tuỳ chọn)</span></label>
+            {canEdit ? (
+              <FileAttachments
+                value={form.attachments ?? []}
+                onChange={(files) => setForm((p) => ({ ...p, attachments: files }))}
+                token={token}
+              />
+            ) : (form.attachments ?? []).length > 0 ? (
+              <div className="space-y-2">
+                {(form.attachments ?? []).map((f) => (
+                  <div key={f.url} className="flex items-center gap-2 text-[13px] text-gray-600 bg-gray-50 rounded-xl px-4 py-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+                    </svg>
+                    {f.name}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[13px] text-gray-300 italic">Không có file đính kèm</p>
+            )}
           </div>
 
           {canEdit && (

@@ -74,6 +74,60 @@ const NewsDetailPage = () => {
                   {article.content}
                 </div>
 
+                {/* Video */}
+                {article.video && (
+                  <div className="mt-8">
+                    <h3 className="text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-3">Video</h3>
+                    <video
+                      src={article.video}
+                      controls
+                      className="w-full rounded-2xl bg-black max-h-[480px] object-contain"
+                    />
+                  </div>
+                )}
+
+                {/* File attachments */}
+                {(() => {
+                  const files = (() => {
+                    try { return JSON.parse(article.attachments || "[]"); } catch { return []; }
+                  })();
+                  if (!files.length) return null;
+                  return (
+                    <div className="mt-8">
+                      <h3 className="text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-3">File đính kèm</h3>
+                      <div className="space-y-2">
+                        {files.map((file) => (
+                          <a
+                            key={file.url}
+                            href={file.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 px-4 py-3.5 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-xl transition-colors group"
+                          >
+                            <div className="w-9 h-9 rounded-lg bg-[#c00000]/10 flex items-center justify-center shrink-0">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#c00000]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+                              </svg>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[14px] font-semibold text-gray-800 group-hover:text-[#c00000] truncate transition-colors">{file.name}</p>
+                              <p className="text-[11px] text-gray-400">
+                                {file.size < 1024 * 1024
+                                  ? `${(file.size / 1024).toFixed(1)} KB`
+                                  : `${(file.size / 1024 / 1024).toFixed(1)} MB`}
+                                {" · "}Mở trong cửa sổ mới
+                              </p>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400 group-hover:text-[#c00000] shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                            </svg>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* Tags */}
                 <div className="mt-10 pt-6 border-t border-gray-100 flex flex-wrap gap-2">
                   {[article.category, "Vinacomin", "2026"].map((tag) => (

@@ -13,8 +13,11 @@ app.use(cors({
 
 app.use(express.json({ limit: "10mb" }));
 
-// Serve uploaded images as static files
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+// Serve all uploaded files (images, videos, attachments) with inline Content-Disposition
+const uploadsDir = path.join(__dirname, "../uploads");
+app.use("/uploads", express.static(uploadsDir, {
+  setHeaders: (res) => res.setHeader("Content-Disposition", "inline"),
+}));
 
 app.use("/api", routes);
 
@@ -24,7 +27,7 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
-    return res.status(400).json({ success: false, message: "File quá lớn (tối đa 5MB)" });
+    return res.status(400).json({ success: false, message: "File quá lớn" });
   }
   console.error(err.stack);
   res.status(500).json({ success: false, message: err.message || "Internal server error" });

@@ -16,7 +16,7 @@ router.get("/articles", async (req, res) => {
 });
 
 router.post("/articles", async (req, res) => {
-  const { title, slug, excerpt, content, category, image, date } = req.body;
+  const { title, slug, excerpt, content, category, image, video, attachments } = req.body;
   if (!title?.trim() || !slug?.trim() || !content?.trim()) {
     return res.status(400).json({ success: false, message: "Thiếu các trường bắt buộc: tiêu đề, slug, nội dung" });
   }
@@ -28,6 +28,8 @@ router.post("/articles", async (req, res) => {
       title: title.trim(), slug: slug.trim(),
       excerpt: excerpt?.trim() ?? "", content: content.trim(),
       category: category?.trim() ?? "Khác", image: image?.trim() ?? "",
+      video: video?.trim() || null,
+      attachments: attachments ? JSON.stringify(attachments) : null,
       date: new Date().toLocaleDateString("vi-VN"),
       status: "draft",
       authorId: req.user.id,
@@ -45,7 +47,7 @@ router.put("/articles/:id", async (req, res) => {
     return res.status(400).json({ success: false, message: "Chỉ có thể chỉnh sửa bài nháp hoặc bị từ chối" });
   }
 
-  const { title, slug, excerpt, content, category, image } = req.body;
+  const { title, slug, excerpt, content, category, image, video, attachments } = req.body;
   if (!title?.trim() || !slug?.trim() || !content?.trim()) {
     return res.status(400).json({ success: false, message: "Thiếu các trường bắt buộc" });
   }
@@ -58,6 +60,8 @@ router.put("/articles/:id", async (req, res) => {
       title: title.trim(), slug: slug.trim(),
       excerpt: excerpt?.trim() ?? "", content: content.trim(),
       category: category?.trim() ?? "Khác", image: image?.trim() ?? "",
+      video: video?.trim() || null,
+      attachments: attachments ? JSON.stringify(attachments) : null,
       // Editing a rejected article moves it back to draft so writer can re-submit
       ...(article.status === "rejected" ? { status: "draft" } : {}),
     },

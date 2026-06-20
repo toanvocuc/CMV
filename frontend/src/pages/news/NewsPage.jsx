@@ -32,9 +32,17 @@ const NewsPage = () => {
     return () => { cancelled = true; };
   }, [activeCategory, page]);
 
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
   const handleCategory = (cat) => {
     setActiveCategory(cat);
     setPage(1);
+    scrollToTop();
+  };
+
+  const handlePageChange = (p) => {
+    setPage(p);
+    scrollToTop();
   };
 
   const articles = data?.data ?? [];
@@ -144,7 +152,7 @@ const NewsPage = () => {
                   {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => (
                     <button
                       key={p}
-                      onClick={() => setPage(p)}
+                      onClick={() => handlePageChange(p)}
                       className={`w-9 h-9 rounded-full text-[13px] font-semibold transition-all duration-200 ${
                         p === page ? "bg-[#c00000] text-white" : "bg-white border border-gray-200 text-gray-600 hover:border-[#c00000] hover:text-[#c00000]"
                       }`}
