@@ -7,17 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model News {
+model User {
   id        Int      @id @default(autoincrement())
-  title     String
-  slug      String   @unique
-  excerpt   String
-  content   String
-  category  String
-  image     String
-  date      String
+  username  String   @unique
+  password  String
+  name      String
+  role      String   @default("writer")
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
+
+model News {
+  id          Int       @id @default(autoincrement())
+  title       String
+  slug        String    @unique
+  excerpt     String
+  content     String
+  category    String
+  image       String
+  date        String
+  status      String    @default("draft")
+  sortOrder   Int       @default(0)
+  approvedBy  String?
+  approvedAt  DateTime?
+  authorId    Int?
+  authorName  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Job {

@@ -2,29 +2,43 @@ import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(null);
 
-const TOKEN_KEY = "vinacomin_admin_token";
-const USER_KEY = "vinacomin_admin_user";
+const KEYS = {
+  token:    "vinacomin_token",
+  username: "vinacomin_user",
+  name:     "vinacomin_name",
+  role:     "vinacomin_role",
+};
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
-  const [username, setUsername] = useState(() => localStorage.getItem(USER_KEY));
+  const [token,    setToken]    = useState(() => localStorage.getItem(KEYS.token));
+  const [username, setUsername] = useState(() => localStorage.getItem(KEYS.username));
+  const [name,     setName]     = useState(() => localStorage.getItem(KEYS.name));
+  const [role,     setRole]     = useState(() => localStorage.getItem(KEYS.role));
 
-  const login = (newToken, newUsername) => {
-    localStorage.setItem(TOKEN_KEY, newToken);
-    localStorage.setItem(USER_KEY, newUsername);
+  const login = (newToken, newUsername, newRole, newName) => {
+    localStorage.setItem(KEYS.token,    newToken);
+    localStorage.setItem(KEYS.username, newUsername);
+    localStorage.setItem(KEYS.name,     newName ?? newUsername);
+    localStorage.setItem(KEYS.role,     newRole);
     setToken(newToken);
     setUsername(newUsername);
+    setName(newName ?? newUsername);
+    setRole(newRole);
   };
 
   const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    setToken(null);
-    setUsername(null);
+    Object.values(KEYS).forEach((k) => localStorage.removeItem(k));
+    setToken(null); setUsername(null); setName(null); setRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ token, username, login, logout, isAuth: !!token }}>
+    <AuthContext.Provider value={{
+      token, username, name, role,
+      login, logout,
+      isAuth:   !!token,
+      isAdmin:  role === "admin",
+      isWriter: role === "writer",
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -10,12 +10,13 @@ router.get("/", async (req, res) => {
   const pageSize = Math.min(50, Math.max(1, parseInt(limit)));
   const skip = (pageNum - 1) * pageSize;
 
-  const where = category && category !== "Tất cả" ? { category } : {};
+  const where = { status: "published" };
+  if (category && category !== "Tất cả") where.category = category;
 
   const [items, total] = await Promise.all([
     prisma.news.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ sortOrder: "desc" }, { createdAt: "desc" }],
       skip,
       take: pageSize,
       select: {
@@ -45,8 +46,8 @@ router.get("/", async (req, res) => {
 
 // GET /api/news/:slug
 router.get("/:slug", async (req, res) => {
-  const article = await prisma.news.findUnique({
-    where: { slug: req.params.slug },
+  const article = await prisma.news.findFirst({
+    where: { slug: req.params.slug, status: "published" },
   });
 
   if (!article) {
