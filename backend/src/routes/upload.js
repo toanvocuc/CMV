@@ -5,7 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const requireAuth = require("../middleware/requireAuth");
 
-const BASE = path.join(__dirname, "../../uploads");
+const BASE = process.env.UPLOADS_DIR || path.join(__dirname, "../../uploads");
 const DIRS = {
   images: BASE,
   videos: path.join(BASE, "videos"),
